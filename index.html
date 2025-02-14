@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, inicial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+        <title>Analizador Lexico</title>
+        
+    </head>
+    <body>
+        <h1>Analizador Lexico</h1>
+
+        <input type="file" id="cargarArchivo" accept=".txt"> <!--se tiene que modificar para aceptar todos los tipos de archivos-->
+        <button onclick="cargarTectoDesdeArchivo()">Cargar Archivo</button>
+
+        <textarea id="entradaTexto" rows="10" cols="50" placeholder="Escriba el texto aqui......"></textarea>
+        <br>
+        <button onclick="limpiarTexto()">Limpiar Texto</button> 
+
+        <!--busqueda de patrones-->
+        <h2>Busqueda de patrones</h2>
+        <input type="text" id="busqueda" placeholder="ingrese la palabra a buscar">
+        <button onclick="buscarPatron()">Buscar Patron</button>
+        <p id="resultadoBusqueda"></p>
+
+        <!--Ejecucion de analisis-->
+        <h2>Analisis Lexico</h2>
+        <button onclick="analizarTexto()">Analizar Texto</button>
+
+        <!--Resultados-->
+        <h3>Errores Encontrados</h3>
+        <table id="tablaErrores" border="1">
+            <tr><th>Simbolo</th><th>Posicion</th></tr>
+        </table>
+
+        <h3>Tokens Detectados</h3>
+        <table id="tablaTokens" border="1">
+            <tr><th>Lexema</th><th>Frecuencia</th></tr>
+        </table>
+
+        <h3>Conteo de Lexemas</h3>
+        <table id="tablaConteoLexemas" border="1">
+            <tr><th>Lexema</th><th>frecuencia</th></tr>
+        </table>
+
+        <!--exportar texto analizado-->
+        <button onclick="exportarTexto()">Guardar Texto</button>
+
+    </body>
+</html>

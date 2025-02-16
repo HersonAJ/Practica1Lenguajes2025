@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analizador Lexico</title>
+    <title>Analizador Léxico</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,7 +22,8 @@
         }
         textarea {
             width: 100%;
-            height: 150px;
+            min-height: 100px;
+            max-height: none; /* Quita la restricción de altura máxima */
             margin-top: 10px;
             padding: 10px;
             font-size: 16px;
@@ -29,6 +31,8 @@
             border: none;
             background-color: #99aab5;
             color: black;
+            overflow-y: auto; /* Permitir el scroll si es necesario */
+            resize: none; /* Deshabilitar la opción de redimensionar */
         }
         button {
             margin-top: 10px;
@@ -43,15 +47,25 @@
         button:hover {
             background-color: #5b6eae;
         }
+        /* Ocultar el input file */
+        #inputArchivo {
+            display: none;
+        }
     </style>
-    <body>
-        <div class="container">
-            <h1>Analizador Lexico</h1>
-            <button onclick="abrirArchivo()">Abrir Archivo</button>
-            <button onclick="descargarArchivo()">Descargar Archivo</button>
-            <textarea id="editor" placeholder="Escriba el texto aqui...."></textarea>
-            <button onclick="analizarTexto()">Analizar Texto</button>
-        </div>
-        
-    </body>
+</head>
+<body>
+    <div class="container">
+        <h1>Analizador Léxico</h1>
+        <button onclick="seleccionarArchivo()">Seleccionar Archivo</button>
+        <button onclick="descargarArchivo()">Descargar Archivo</button>
+        <textarea id="editor" placeholder="Escriba el texto aquí..." oninput="ajustarTextarea()"></textarea>
+        <button onclick="analizarTexto()">Analizar Texto</button>
+        <input type="file" id="inputArchivo">
+    </div>
+
+    <script src="selectorArchivo.js"></script>
+</body>
 </html>
+
+
+

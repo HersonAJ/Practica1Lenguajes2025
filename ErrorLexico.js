@@ -1,6 +1,9 @@
 class ErrorLexico {
-    constructor(simbolo, posicion) {
+    constructor(simbolo, columna, fila) {
         this.simbolo = simbolo;
-        this.posicion = posicion;
+        this.posicion = {
+            columna: columna,
+            fila: fila
+        };
     }
 }

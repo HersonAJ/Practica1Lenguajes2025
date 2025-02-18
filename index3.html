@@ -63,6 +63,7 @@
         <button onclick="descargarArchivo()">Descargar Archivo</button>
         <textarea id="editor" placeholder="Escriba el texto aquí..." oninput="ajustarTextarea()"></textarea>
         <button onclick="analizarTexto()">Analizar Texto</button>
+        <button onclick="verReporteTokens()">Ver Reporte de Tokens</button>
         <input type="file" id="inputArchivo">
         <div id="resultados"></div>
     </div>
@@ -70,8 +71,15 @@
     <script src="Token.js"></script>
     <script src="ErrorLexico.js"></script>
     <script src="AnalizadorLexico.js"></script>
+    <script src="poblarTabla.js"></script>
+    <script>
+        function verReporteTokens() {
+            window.location.href = 'ReporteToken.html';
+        }
+    </script>
 </body>
 </html>
+
 
 
 

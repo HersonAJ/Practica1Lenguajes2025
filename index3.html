@@ -71,6 +71,9 @@
         #inputArchivo {
             display: none;
         }
+        #inputGuardar { 
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -84,11 +87,14 @@
         </div>
         <button onclick="analizarTexto()">Analizar Texto</button>
         <button onclick="verReporteTokens()">Ver Reporte de Tokens</button>
+        <button onclick="abrirGuardarComo()">Guardar Texto</button> <!-- Botón para abrir el diálogo de guardar -->
         <input type="file" id="inputArchivo">
+        <input type="file" id="inputGuardar" nwdirectory> <!-- input tipo file para guardar archivo -->
         <div id="resultados"></div>
         <input type="text" id="buscar" placeholder="Buscar...">
         <button onclick="buscar()">Buscar</button>
         <div id="resultadosBusqueda"></div> <!-- Mostrar resultados de búsqueda -->
+
     </div>
     <script src="selectorArchivo.js"></script>
     <script src="Token.js"></script>
@@ -98,6 +104,7 @@
     <script src="Main.js"></script>
     <script src="Funciones.js"></script>
     <script src="Busqueda.js"></script> 
+    <script src="GuardarArchivo.js"></script> 
     <script>
         function verReporteTokens() {
             window.location.href = 'ReporteToken.html';
@@ -124,6 +131,14 @@
             let textarea = document.getElementById('editor');
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        function abrirGuardarComo() {
+            const texto = document.getElementById('editor').value;
+            const nombreArchivo = prompt("Nombre del archivo:", "analizado.txt");
+            if (nombreArchivo) {
+                GuardarTexto.guardarComoArchivo(texto, nombreArchivo);
+            }
         }
     </script>
 </body>

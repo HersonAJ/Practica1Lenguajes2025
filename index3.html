@@ -13,17 +13,20 @@
             padding: 20px;
         }
         .container {
-            max-width: 600px;
+            max-width: 1000px; 
             margin: auto;
             background-color: #23272a;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
         }
+        .textarea-container {
+            display: flex; 
+            gap: 10px; 
+        }
         textarea {
-            width: 100%;
-            min-height: 100px;
-            max-height: none;
+            width: 48%; 
+            height: 560px; 
             margin-top: 10px;
             padding: 10px;
             font-size: 16px;
@@ -31,8 +34,14 @@
             border: none;
             background-color: #99aab5;
             color: black;
-            overflow-y: auto;
-            resize: none;
+            resize: none; 
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+        .output {
+            margin-top: 20px;
+            background-color: #2c2f33;
+            color: white;
         }
         button {
             margin-top: 10px;
@@ -47,12 +56,13 @@
         button:hover {
             background-color: #5b6eae;
         }
+        .highlight {
+            background-color: yellow;
+            color: black;
+        }
+
         #inputArchivo {
             display: none;
-        }
-        #resultados {
-            margin-top: 20px;
-            text-align: left;
         }
     </style>
 </head>
@@ -61,11 +71,16 @@
         <h1>Analizador Léxico</h1>
         <button onclick="seleccionarArchivo()">Seleccionar Archivo</button>
         <button onclick="descargarArchivo()">Descargar Archivo</button>
-        <textarea id="editor" placeholder="Escriba el texto aquí..." oninput="ajustarTextarea()"></textarea>
+        <div class="textarea-container"> <!-- Contenedor flexible para los textarea -->
+            <textarea id="editor" placeholder="Escriba el texto aquí..." oninput="copiarTexto()"></textarea>
+            <textarea id="salida" class="output" readonly></textarea>
+        </div>
         <button onclick="analizarTexto()">Analizar Texto</button>
         <button onclick="verReporteTokens()">Ver Reporte de Tokens</button>
         <input type="file" id="inputArchivo">
         <div id="resultados"></div>
+        <input type="text" id="buscar" placeholder="Buscar...">
+        <button onclick="buscarTexto()">Buscar</button>
     </div>
     <script src="selectorArchivo.js"></script>
     <script src="Token.js"></script>
@@ -78,13 +93,25 @@
         function verReporteTokens() {
             window.location.href = 'ReporteToken.html';
         }
+
+        function copiarTexto() {
+            let texto = document.getElementById('editor').value;
+            document.getElementById('salida').value = texto;
+        }
+
+        function buscarTexto() {
+            let texto = document.getElementById('salida').value;
+            let buscar = document.getElementById('buscar').value;
+            let regex = new RegExp(`(${buscar})`, 'gi');
+            let resaltado = texto.replace(regex, '<span class="highlight">$1</span>');
+            document.getElementById('salida').innerHTML = resaltado.replace(/\n/g, '<br>');
+        }
+
+        function ajustarTextarea() {
+            let textarea = document.getElementById('editor');
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
     </script>
 </body>
 </html>
-
-
-
-
-
-
-

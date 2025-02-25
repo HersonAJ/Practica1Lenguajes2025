@@ -1,7 +1,8 @@
 class SelectorArchivo {
-    constructor(inputFileId, textAreaId) {
+    constructor(inputFileId, textAreaId, outputAreaId) {
         this.inputFile = document.getElementById(inputFileId);
         this.textArea = document.getElementById(textAreaId);
+        this.outputArea = document.getElementById(outputAreaId);
         this.init();
     }
 
@@ -19,26 +20,18 @@ class SelectorArchivo {
         const lector = new FileReader();
         lector.onload = (e) => {
             this.textArea.value = e.target.result;
-            ajustarTextarea(); // Ajustar tamaño tras carga
+            this.outputArea.value = e.target.result; // Copia el texto al área de salida
         };
         lector.readAsText(archivo);
     }
 }
 
+// Función para abrir el selector de archivos
 function seleccionarArchivo() {
     document.getElementById("inputArchivo").click();
 }
 
-// Función para ajustar el tamaño del textarea automáticamente
-function ajustarTextarea() {
-    const textArea = document.getElementById("editor");
-    textArea.style.height = "auto"; // Reiniciar tamaño
-    textArea.style.height = textArea.scrollHeight + "px"; // Ajustar al contenido
-}
-
 // Iniciar la clase cuando cargue el DOM
 document.addEventListener("DOMContentLoaded", () => {
-    new SelectorArchivo("inputArchivo", "editor");
+    new SelectorArchivo("inputArchivo", "editor", "salida");
 });
-
-

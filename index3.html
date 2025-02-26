@@ -86,7 +86,13 @@
             <div id="salida" class="output" readonly></div>
         </div>
         <button onclick="analizarTexto()">Analizar Texto</button>
-        <button onclick="verReporteTokens()">Ver Reporte de Tokens</button>
+        <div>
+            <select id="seleccionReporte">
+                <option value="ReporteToken.html">Reporte de Tokens</option>
+                <option value="ReporteErrores.html">Reporte de Errores</option>
+            </select>
+            <button onclick="verReporte()">Ver Reporte</button>
+        </div>
         <button onclick="abrirGuardarComo()">Guardar Texto</button> <!-- Botón para abrir el diálogo de guardar -->
         <input type="file" id="inputArchivo">
         <input type="file" id="inputGuardar" nwdirectory> <!-- input tipo file para guardar archivo -->
@@ -106,8 +112,9 @@
     <script src="Busqueda.js"></script> 
     <script src="GuardarArchivo.js"></script> 
     <script>
-        function verReporteTokens() {
-            window.location.href = 'ReporteToken.html';
+        function verReporte() {
+            const seleccion = document.getElementById('seleccionReporte').value;
+            window.location.href = seleccion;
         }
 
         function copiarTexto() {

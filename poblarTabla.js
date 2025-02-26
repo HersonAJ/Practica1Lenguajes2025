@@ -16,6 +16,22 @@ function poblarTablaTokens(tokens) {
     });
 }
 
+function poblarTablaErrores(errores) {
+    const tabla = document.getElementById('tablaErrores').getElementsByTagName('tbody')[0];
+    tabla.innerHTML = ''; // Limpiar la tabla antes de agregar nuevos datos
+
+    errores.forEach(error => {
+        const fila = tabla.insertRow();
+        const celdaCadena = fila.insertCell(0);
+        const celdaColumna = fila.insertCell(1);
+        const celdaFila = fila.insertCell(2);
+
+        celdaCadena.textContent = error.simbolo;
+        celdaColumna.textContent = error.posicion.columna;
+        celdaFila.textContent = error.posicion.fila;
+    });
+}
+
 function analizarTexto() {
     const texto = document.getElementById('editor').value;
     const analizador = new AnalizadorLexico(texto);
@@ -23,14 +39,22 @@ function analizarTexto() {
     analizador.imprimirTokens();
     analizador.imprimirErrores();
 
-    // Guardar los tokens en sessionStorage
+    // Guardar los tokens y errores en sessionStorage
     sessionStorage.setItem('tokens', JSON.stringify(analizador.tokens));
+    sessionStorage.setItem('errores', JSON.stringify(analizador.errores));
 }
 
 function cargarTokens() {
     const tokens = JSON.parse(sessionStorage.getItem('tokens'));
     if (tokens) {
         poblarTablaTokens(tokens);
+    }
+}
+
+function cargarErrores() {
+    const errores = JSON.parse(sessionStorage.getItem('errores'));
+    if (errores) {
+        poblarTablaErrores(errores);
     }
 }
 

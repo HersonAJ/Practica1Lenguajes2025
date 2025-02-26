@@ -55,4 +55,12 @@ class Funciones {
         }
         return false;
     }
+
+    static esSaltoDeLinea(char) {
+        return char === '\n'
+    }
+
+    static esEspacio (char) {
+        return char ===' '
+    }
 }

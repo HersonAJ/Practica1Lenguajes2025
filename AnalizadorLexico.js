@@ -15,12 +15,10 @@ class AnalizadorLexico {
             const char = this.texto[this.posicion];
             if (Funciones.esLetra(char)) {
                 this.analizarIdentificador();
-            } else if (Funciones.esDigito(char)) {
-                this.analizarNumero();
+            } else if (Funciones.esDigito(char) || (char === '.' && this.posicion > 0 && Funciones.esDigito(this.texto[this.posicion - 1]))) {
+                this.analizarNumeroODecimal();
             } else if (Funciones.esOperador(char)) {
-                this.agregarToken("Operador", char, this.columna, this.fila);
-                this.columna++;
-                this.posicion++;
+                this.analizarOperador(char);
             } else if (Funciones.esPuntuacion(char)) {
                 this.agregarToken("Puntuacion", char, this.columna, this.fila);
                 this.columna++;
@@ -29,10 +27,10 @@ class AnalizadorLexico {
                 this.agregarToken("Agrupacion", char, this.columna, this.fila);
                 this.columna++;
                 this.posicion++;
-            } else if (char === ' ') {
+            } else if (Funciones.esEspacio(char)) {
                 this.columna++;
                 this.posicion++;
-            } else if (char === '\n') {
+            } else if (Funciones.esSaltoDeLinea(char)) {
                 this.fila++;
                 this.columna = 1;
                 this.posicion++;
@@ -42,6 +40,33 @@ class AnalizadorLexico {
                 this.posicion++;
             }
         }
+    }
+
+    analizarNumeroODecimal() {
+        let inicio = this.posicion;
+        let longitudLexema = 0;
+        let tienePunto = false;
+
+        while (this.posicion < this.texto.length && (Funciones.esDigito(this.texto[this.posicion]) || this.texto[this.posicion] === '.')) {
+            if (this.texto[this.posicion] === '.') {
+                if (tienePunto) {
+                    this.errores.push(new ErrorLexico(this.texto.substring(inicio, this.posicion + 1), this.columna, this.fila));
+                    return;
+                }
+                tienePunto = true;
+            }
+            this.posicion++;
+            longitudLexema++;
+        }
+
+        if (tienePunto && (this.posicion === inicio + 1 || this.texto[this.posicion - 1] === '.')) {
+            this.errores.push(new ErrorLexico(this.texto.substring(inicio, this.posicion), this.columna, this.fila));
+            return;
+        }
+
+        const valor = this.texto.substring(inicio, this.posicion);
+        this.agregarToken(tienePunto ? "Decimal" : "Numero", valor, this.columna, this.fila);
+        this.columna += longitudLexema;
     }
 
     analizarIdentificador() {
@@ -56,24 +81,32 @@ class AnalizadorLexico {
         this.columna += longitudLexema;
     }
 
-    analizarNumero() {
-        let inicio = this.posicion;
-        let longitudLexema = 0;
-        while (this.posicion < this.texto.length && Funciones.esDigito(this.texto[this.posicion])) {
+    analizarOperador(char) {
+        if (char === '&' && this.texto[this.posicion + 1] === '&') {
+            this.agregarToken("Operador Logico", '&&', this.columna, this.fila);
+            this.columna += 2;
+            this.posicion += 2;
+        } else if (char === '|' && this.texto[this.posicion + 1] === '|') {
+            this.agregarToken("Operador Logico", '||', this.columna, this.fila);
+            this.columna += 2;
+            this.posicion += 2;
+        } else if (['<', '>', '='].includes(char) && this.texto[this.posicion + 1] === '=') {
+            this.agregarToken("Operador Relacional", char + '=', this.columna, this.fila);
+            this.columna += 2;
+            this.posicion += 2;
+        } else if (['+', '-', '*', '/', '^'].includes(char)) {
+            this.agregarToken("Operador Aritmetico", char, this.columna, this.fila);
+            this.columna++;
             this.posicion++;
-            longitudLexema++;
-        }
-        if (this.posicion < this.texto.length && this.texto[this.posicion] === '.') {
+        } else if (['<', '>'].includes(char)) {
+            this.agregarToken("Operador Relacional", char, this.columna, this.fila);
+            this.columna++;
             this.posicion++;
-            longitudLexema++;
-            while (this.posicion < this.texto.length && Funciones.esDigito(this.texto[this.posicion])) {
-                this.posicion++;
-                longitudLexema++;
-            }
+        } else if (char === '=') {
+            this.agregarToken("Operador de Asignacion", char, this.columna, this.fila);
+            this.columna++;
+            this.posicion++;
         }
-        const valor = this.texto.substring(inicio, this.posicion);
-        this.agregarToken("Numero", valor, this.columna, this.fila);
-        this.columna += longitudLexema;
     }
 
     agregarToken(tipo, valor, columna, fila) {

@@ -6,36 +6,42 @@ class AnalizadorLexico {
         this.posicion = 0;
         this.columna = 0;
         this.fila = 0;
+        this.enError = false;
     }
 
     analizar() {
         this.fila = 1;
         this.columna = 1;
         while (this.posicion < this.texto.length) {
-            const char = this.texto[this.posicion];
-            if (Funciones.esLetra(char)) {
-                this.analizarIdentificador();
-            } else if (Funciones.esDigito(char)) {
-                this.analizarNumeroODecimal();
-            } else if (Funciones.esOperador(char)) {
-                this.analizarOperador(char);
-            } else if (Funciones.esPuntuacion(char)) {
-                this.agregarToken("Puntuacion", char, this.columna, this.fila);
-                this.columna++;
-                this.posicion++;
-            } else if (Funciones.esAgrupacion(char)) {
-                this.agregarToken("Agrupacion", char, this.columna, this.fila);
-                this.columna++;
-                this.posicion++;
-            } else if (Funciones.esEspacio(char)) {
-                this.columna++;
-                this.posicion++;
-            } else if (Funciones.esSaltoDeLinea(char)) {
-                this.fila++;
-                this.columna = 1;
-                this.posicion++;
-            } else {
+            if (this.enError) {
                 this.analizarError();
+            } else {
+                const char = this.texto[this.posicion];
+                if (Funciones.esLetra(char)) {
+                    this.analizarIdentificador();
+                } else if (Funciones.esDigito(char)) {
+                    this.analizarNumeroODecimal();
+                } else if (Funciones.esOperador(char)) {
+                    this.analizarOperador(char);
+                } else if (Funciones.esPuntuacion(char)) {
+                    this.agregarToken("Puntuacion", char, this.columna, this.fila);
+                    this.columna++;
+                    this.posicion++;
+                } else if (Funciones.esAgrupacion(char)) {
+                    this.agregarToken("Agrupacion", char, this.columna, this.fila);
+                    this.columna++;
+                    this.posicion++;
+                } else if (Funciones.esEspacio(char)) {
+                    this.columna++;
+                    this.posicion++;
+                } else if (Funciones.esSaltoDeLinea(char)) {
+                    this.fila++;
+                    this.columna = 1;
+                    this.posicion++;
+                } else {
+                    this.enError = true;
+                    this.analizarError();
+                }
             }
         }
     }
@@ -48,7 +54,9 @@ class AnalizadorLexico {
             longitudLexema++;
         }
         const valor = this.texto.substring(inicio, this.posicion);
-        this.agregarToken("Identificador", valor, this.columna, this.fila);
+        if (!this.enError) {
+            this.agregarToken("Identificador", valor, this.columna, this.fila);
+        }
         this.columna += longitudLexema;
     }
 
@@ -60,6 +68,7 @@ class AnalizadorLexico {
         while (this.posicion < this.texto.length && (Funciones.esDigito(this.texto[this.posicion]) || this.texto[this.posicion] === '.')) {
             if (this.texto[this.posicion] === '.') {
                 if (tienePunto) {
+                    this.enError = true;
                     this.errores.push(new ErrorLexico(this.texto.substring(inicio, this.posicion + 1), this.columna, this.fila));
                     return;
                 }
@@ -70,12 +79,15 @@ class AnalizadorLexico {
         }
 
         if (tienePunto && (this.posicion === inicio + 1 || this.texto[this.posicion - 1] === '.')) {
+            this.enError = true;
             this.errores.push(new ErrorLexico(this.texto.substring(inicio, this.posicion), this.columna, this.fila));
             return;
         }
 
         const valor = this.texto.substring(inicio, this.posicion);
-        this.agregarToken(tienePunto ? "Decimal" : "Numero", valor, this.columna, this.fila);
+        if (!this.enError) {
+            this.agregarToken(tienePunto ? "Decimal" : "Numero", valor, this.columna, this.fila);
+        }
         this.columna += longitudLexema;
     }
 
@@ -124,8 +136,9 @@ class AnalizadorLexico {
 
         const valor = this.texto.substring(inicio, this.posicion);
         this.errores.push(new ErrorLexico(valor, this.columna, this.fila));
+        this.posicion = inicio + valor.length; // Asegurar que la posición no avance innecesariamente
         this.columna += longitudLexema;
-    
+        this.enError = false;
     }
 
     agregarToken(tipo, valor, columna, fila) {

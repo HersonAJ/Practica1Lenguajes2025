@@ -74,27 +74,39 @@
         #inputGuardar { 
             display: none;
         }
+        .button-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .report-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Analizador Léxico</h1>
         <button onclick="seleccionarArchivo()">Seleccionar Archivo</button>
-        <button onclick="descargarArchivo()">Descargar Archivo</button>
+        <button onclick="abrirGuardarComo()">Guardar Texto</button> <!-- Botón para abrir el diálogo de guardar -->
         <div class="textarea-container">
             <textarea id="editor" placeholder="Escriba el texto aquí..." oninput="copiarTexto()"></textarea>
             <div id="salida" class="output" readonly></div>
         </div>
-        <button onclick="analizarTexto()">Analizar Texto</button>
-        <div>
-            <select id="seleccionReporte">
-                <option value="ReporteToken.html">Reporte de Tokens</option>
-                <option value="ReporteErrores.html">Reporte de Errores</option>
-                <option value="RecuentoTokens.html">Recuento de Tokens</option>
-            </select>
-            <button onclick="verReporte()">Ver Reporte</button>
+        <div class="button-container">
+            <button onclick="analizarTexto()">Analizar Texto</button>
+            <div class="report-container">
+                <select id="seleccionReporte">
+                    <option value="ReporteToken.html">Reporte de Tokens</option>
+                    <option value="ReporteErrores.html">Reporte de Errores</option>
+                    <option value="RecuentoTokens.html">Recuento de Tokens</option>
+                </select>
+                <button onclick="verReporte()">Ver Reporte</button>
+            </div>
         </div>
-        <button onclick="abrirGuardarComo()">Guardar Texto</button> <!-- Botón para abrir el diálogo de guardar -->
         <input type="file" id="inputArchivo">
         <input type="file" id="inputGuardar" nwdirectory> <!-- input tipo file para guardar archivo -->
         <div id="resultados"></div>
@@ -147,6 +159,22 @@
             if (nombreArchivo) {
                 GuardarTexto.guardarComoArchivo(texto, nombreArchivo);
             }
+        }
+
+        function analizarTexto() {
+            // Código para analizar el texto aquí
+            const texto = document.getElementById('editor').value;
+            const analizador = new AnalizadorLexico(texto);
+            analizador.analizar();
+            analizador.imprimirTokens();
+            analizador.imprimirErrores();
+
+            // Guardar los tokens y errores en sessionStorage
+            sessionStorage.setItem('tokens', JSON.stringify(analizador.tokens));
+            sessionStorage.setItem('errores', JSON.stringify(analizador.errores));
+
+            // Mostrar alert
+            alert("Texto Analizado");
         }
     </script>
 </body>

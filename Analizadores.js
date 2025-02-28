@@ -1,4 +1,4 @@
-class Funciones {
+class Analizadores {
     static esLetra(char) {
         switch (char) {
             case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
@@ -18,12 +18,21 @@ class Funciones {
     }
 
     static esDigito(char) {
-        for (let i = 0; i < 10; i++) {
-            if (char === String.fromCharCode(48 + i)) {
+        switch (char) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
                 return true;
-            }
+            default:
+                return false;
         }
-        return false;
     }
 
     static esOperador(char) {

@@ -120,74 +120,9 @@
     <script src="ErrorLexico.js"></script>
     <script src="AnalizadorLexico.js"></script>
     <script src="poblarTabla.js"></script>
-    <script src="Main.js"></script>
-    <script src="Funciones.js"></script>
+    <script src="Analizadores.js"></script>
     <script src="Busqueda.js"></script> 
     <script src="GuardarArchivo.js"></script> 
-    <script>
-function verReporte() {
-    const seleccion = document.getElementById('seleccionReporte').value;
-    const errores = JSON.parse(sessionStorage.getItem('errores')) || [];
-
-    if (seleccion === "RecuentoTokens.html" && errores.length > 0) {
-        alert("No se puede mostrar el reporte de Recuento de Tokens porque existen errores.");
-    } else {
-        window.location.href = seleccion;
-    }
-}
-
-
-        function copiarTexto() {
-            let texto = document.getElementById('editor').value;
-            document.getElementById('salida').innerText = texto;
-        }
-
-        function buscar() {
-            let texto = document.getElementById('editor').value;
-            let buscar = document.getElementById('buscar').value;
-            let resultado = Busqueda.buscarTexto(texto, buscar);
-
-            // Mostrar el texto resaltado
-            document.getElementById('salida').innerHTML = resultado.textoResaltado;
-
-            // Mostrar cantidad de coincidencias
-            document.getElementById('resultadosBusqueda').innerText = `Se encontraron ${resultado.coincidencias} coincidencias.`;
-        }
-
-        function ajustarTextarea() {
-            let textarea = document.getElementById('editor');
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-        }
-
-        function abrirGuardarComo() {
-            const texto = document.getElementById('editor').value;
-            const nombreArchivo = prompt("Nombre del archivo:", "analizado.txt");
-            if (nombreArchivo) {
-                GuardarTexto.guardarComoArchivo(texto, nombreArchivo);
-            }
-        }
-
-        function analizarTexto() {
-    const texto = document.getElementById('editor').value;
-    if (texto.trim() === "") {
-        alert("Por favor, ingrese texto o cargue un archivo.");
-        return;
-    }
-
-    const analizador = new AnalizadorLexico(texto);
-    analizador.analizar();
-    analizador.imprimirTokens();
-    analizador.imprimirErrores();
-
-    // Guardar los tokens y errores en sessionStorage
-    sessionStorage.setItem('tokens', JSON.stringify(analizador.tokens));
-    sessionStorage.setItem('errores', JSON.stringify(analizador.errores));
-
-    // Mostrar alert
-    alert("Texto Analizado");
-}
-
-    </script>
+    <script src="index.js"></script>
 </body>
 </html>

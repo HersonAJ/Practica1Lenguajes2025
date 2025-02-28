@@ -17,24 +17,24 @@ class AnalizadorLexico {
                 this.analizarError();
             } else {
                 const char = this.texto[this.posicion];
-                if (Funciones.esLetra(char)) {
+                if (Analizadores.esLetra(char)) {
                     this.analizarIdentificador();
-                } else if (Funciones.esDigito(char)) {
+                } else if (Analizadores.esDigito(char)) {
                     this.analizarNumeroODecimal();
-                } else if (Funciones.esOperador(char)) {
+                } else if (Analizadores.esOperador(char)) {
                     this.analizarOperador(char);
-                } else if (Funciones.esPuntuacion(char)) {
+                } else if (Analizadores.esPuntuacion(char)) {
                     this.agregarToken("Puntuacion", char, this.columna, this.fila);
                     this.columna++;
                     this.posicion++;
-                } else if (Funciones.esAgrupacion(char)) {
+                } else if (Analizadores.esAgrupacion(char)) {
                     this.agregarToken("Agrupacion", char, this.columna, this.fila);
                     this.columna++;
                     this.posicion++;
-                } else if (Funciones.esEspacio(char)) {
+                } else if (Analizadores.esEspacio(char)) {
                     this.columna++;
                     this.posicion++;
-                } else if (Funciones.esSaltoDeLinea(char)) {
+                } else if (Analizadores.esSaltoDeLinea(char)) {
                     this.fila++;
                     this.columna = 1;
                     this.posicion++;
@@ -49,7 +49,7 @@ class AnalizadorLexico {
     analizarIdentificador() {
         let inicio = this.posicion;
         let longitudLexema = 0;
-        while (this.posicion < this.texto.length && (Funciones.esLetra(this.texto[this.posicion]) || Funciones.esDigito(this.texto[this.posicion]))) {
+        while (this.posicion < this.texto.length && (Analizadores.esLetra(this.texto[this.posicion]) || Analizadores.esDigito(this.texto[this.posicion]))) {
             this.posicion++;
             longitudLexema++;
         }
@@ -65,7 +65,7 @@ class AnalizadorLexico {
         let longitudLexema = 0;
         let tienePunto = false;
 
-        while (this.posicion < this.texto.length && (Funciones.esDigito(this.texto[this.posicion]) || this.texto[this.posicion] === '.')) {
+        while (this.posicion < this.texto.length && (Analizadores.esDigito(this.texto[this.posicion]) || this.texto[this.posicion] === '.')) {
             if (this.texto[this.posicion] === '.') {
                 if (tienePunto) {
                     this.enError = true;
@@ -124,12 +124,12 @@ class AnalizadorLexico {
         let longitudLexema = 0;
 
         // Mover hacia atrás para capturar el inicio de la palabra
-        while (inicio > 0 && !Funciones.esEspacio(this.texto[inicio - 1]) && !Funciones.esSaltoDeLinea(this.texto[inicio - 1])) {
+        while (inicio > 0 && !Analizadores.esEspacio(this.texto[inicio - 1]) && !Analizadores.esSaltoDeLinea(this.texto[inicio - 1])) {
             inicio--;
         }
 
         // Mover hacia adelante para capturar el final de la palabra
-        while (this.posicion < this.texto.length && !Funciones.esEspacio(this.texto[this.posicion]) && !Funciones.esSaltoDeLinea(this.texto[this.posicion])) {
+        while (this.posicion < this.texto.length && !Analizadores.esEspacio(this.texto[this.posicion]) && !Analizadores.esSaltoDeLinea(this.texto[this.posicion])) {
             this.posicion++;
             longitudLexema++;
         }

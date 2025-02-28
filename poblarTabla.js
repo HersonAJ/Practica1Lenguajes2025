@@ -32,18 +32,6 @@ function poblarTablaErrores(errores) {
     });
 }
 
-function analizarTexto() {
-    const texto = document.getElementById('editor').value;
-    const analizador = new AnalizadorLexico(texto);
-    analizador.analizar();
-    analizador.imprimirTokens();
-    analizador.imprimirErrores();
-
-    // Guardar los tokens y errores en sessionStorage
-    sessionStorage.setItem('tokens', JSON.stringify(analizador.tokens));
-    sessionStorage.setItem('errores', JSON.stringify(analizador.errores));
-}
-
 function cargarTokens() {
     const tokens = JSON.parse(sessionStorage.getItem('tokens'));
     if (tokens) {

@@ -29,8 +29,18 @@ class Busqueda {
             }
         }
 
+        // Reemplazar saltos de línea (\n) con <br>
+        let textoConSaltos = '';
+        for (let i = 0; i < textoResaltado.length; i++) {
+            if (textoResaltado[i] === '\n') {
+                textoConSaltos += '<br>';
+            } else {
+                textoConSaltos += textoResaltado[i];
+            }
+        }
+
         return {
-            textoResaltado: textoResaltado.replace(/\n/g, '<br>'),
+            textoResaltado: textoConSaltos,  
             coincidencias
         };
     }

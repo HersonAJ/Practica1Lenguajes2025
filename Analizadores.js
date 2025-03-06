@@ -35,15 +35,23 @@ class Analizadores {
         }
     }
 
-    static esOperador(char) {
+    static esOperador(char, texto, posicion) {
         const operadores = ['^', '*', '/', '+', '-', '<', '>', '=', '&', '|'];
         for (let i = 0; i < operadores.length; i++) {
-            if (char === operadores[i]) {
+          if (char === operadores[i]) {
+            if (char === '&' || char === '|') {
+              if (posicion + 1 < texto.length && texto[posicion + 1] === char) {
                 return true;
+              } else {
+                return false;
+              }
+            } else {
+              return true;
             }
+          }
         }
         return false;
-    }
+      }
 
     static esPuntuacion(char) {
         const puntuacion = ['.', ',', ';', ':'];

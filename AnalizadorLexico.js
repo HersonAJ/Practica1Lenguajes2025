@@ -13,52 +13,73 @@ class AnalizadorLexico {
         this.fila = 1;
         this.columna = 1;
         while (this.posicion < this.texto.length) {
-            if (this.enError) {
-                this.analizarError();
-            } else {
-                const char = this.texto[this.posicion];
-                if (Analizadores.esLetra(char)) {
-                    this.analizarIdentificador();
-                } else if (Analizadores.esDigito(char)) {
-                    this.analizarNumeroODecimal();
-                } else if (Analizadores.esOperador(char)) {
-                    this.analizarOperador(char);
-                } else if (Analizadores.esPuntuacion(char)) {
-                    this.agregarToken("Puntuacion", char, this.columna, this.fila);
-                    this.columna++;
-                    this.posicion++;
-                } else if (Analizadores.esAgrupacion(char)) {
-                    this.agregarToken("Agrupacion", char, this.columna, this.fila);
-                    this.columna++;
-                    this.posicion++;
-                } else if (Analizadores.esEspacio(char)) {
-                    this.columna++;
-                    this.posicion++;
-                } else if (Analizadores.esSaltoDeLinea(char)) {
-                    this.fila++;
-                    this.columna = 1;
-                    this.posicion++;
+          if (this.enError) {
+            this.analizarError();
+          } else {
+            const char = this.texto[this.posicion];
+            if (Analizadores.esLetra(char)) {
+              if (this.texto.substring(this.posicion, this.posicion + 3) === 'AND') {
+                this.agregarToken("Operador Logico", 'AND', this.columna, this.fila);
+                this.posicion += 3;
+                this.columna += 3;
+              } else if (this.texto.substring(this.posicion, this.posicion + 2) === 'OR') {
+                this.agregarToken("Operador Logico", 'OR', this.columna, this.fila);
+                this.posicion += 2;
+                this.columna += 2;
+              } else {
+                this.analizarIdentificador();
+              }
+            } else if (Analizadores.esDigito(char)) {
+              this.analizarNumeroODecimal();
+            } else if (Analizadores.esOperador(char, this.texto, this.posicion)) {
+              if (char === '&' || char === '|') {
+                if (this.texto[this.posicion + 1] === char) {
+                  this.analizarOperador(char);
+                  this.posicion++; // avanzar la posición del análisis
                 } else {
-                    this.enError = true;
-                    this.analizarError();
+                  this.analizarError();
                 }
+              } else {
+                this.analizarOperador(char);
+              }
+            } else if (Analizadores.esPuntuacion(char)) {
+              this.agregarToken("Puntuacion", char, this.columna, this.fila);
+              this.columna++;
+              this.posicion++;
+            } else if (Analizadores.esAgrupacion(char)) {
+              this.agregarToken("Agrupacion", char, this.columna, this.fila);
+              this.columna++;
+              this.posicion++;
+            } else if (Analizadores.esEspacio(char)) {
+              this.columna++;
+              this.posicion++;
+            } else if (Analizadores.esSaltoDeLinea(char)) {
+              this.fila++;
+              this.columna = 1;
+              this.posicion++;
+            } else {
+              this.enError = true;
+              this.analizarError();
             }
+          }
         }
-    }
-
+      }
     analizarIdentificador() {
         let inicio = this.posicion;
         let longitudLexema = 0;
         while (this.posicion < this.texto.length && (Analizadores.esLetra(this.texto[this.posicion]) || Analizadores.esDigito(this.texto[this.posicion]))) {
-            this.posicion++;
-            longitudLexema++;
+          if (this.texto.substring(this.posicion, this.posicion + 3) === 'AND' || this.texto.substring(this.posicion, this.posicion + 2) === 'OR') {
+            break;
+          }
+          this.posicion++;
+          longitudLexema++;
         }
         const valor = this.texto.substring(inicio, this.posicion);
         if (!this.enError) {
-            this.agregarToken("Identificador", valor, this.columna, this.fila);
+          this.agregarToken("Identificador", valor, this.columna, this.fila);
         }
         this.columna += longitudLexema;
-    }
+      }
 
     analizarNumeroODecimal() {
         let inicio = this.posicion;
@@ -93,31 +114,33 @@ class AnalizadorLexico {
 
     analizarOperador(char) {
         if (char === '&' && this.texto[this.posicion + 1] === '&') {
-            this.agregarToken("Operador Logico", '&&', this.columna, this.fila);
-            this.columna += 2;
-            this.posicion += 2;
+          this.agregarToken("Operador Logico", '&&', this.columna, this.fila);
+          this.columna += 2;
+          this.posicion += 2;
+          return;
         } else if (char === '|' && this.texto[this.posicion + 1] === '|') {
-            this.agregarToken("Operador Logico", '||', this.columna, this.fila);
-            this.columna += 2;
-            this.posicion += 2;
+          this.agregarToken("Operador Logico", '||', this.columna, this.fila);
+          this.columna += 2;
+          this.posicion += 2;
+          return;
         } else if (['<', '>', '='].includes(char) && this.texto[this.posicion + 1] === '=') {
-            this.agregarToken("Operador Relacional", char + '=', this.columna, this.fila);
-            this.columna += 2;
-            this.posicion += 2;
+          this.agregarToken("Operador Relacional", char + '=', this.columna, this.fila);
+          this.columna += 2;
+          this.posicion += 2;
         } else if (['+', '-', '*', '/', '^'].includes(char)) {
-            this.agregarToken("Operador Aritmetico", char, this.columna, this.fila);
-            this.columna++;
-            this.posicion++;
+          this.agregarToken("Operador Aritmetico", char, this.columna, this.fila);
+          this.columna++;
+          this.posicion++;
         } else if (['<', '>'].includes(char)) {
-            this.agregarToken("Operador Relacional", char, this.columna, this.fila);
-            this.columna++;
-            this.posicion++;
+          this.agregarToken("Operador Relacional", char, this.columna, this.fila);
+          this.columna++;
+          this.posicion++;
         } else if (char === '=') {
-            this.agregarToken("Operador de Asignacion", char, this.columna, this.fila);
-            this.columna++;
-            this.posicion++;
+          this.agregarToken("Operador de Asignacion", char, this.columna, this.fila);
+          this.columna++;
+          this.posicion++;
         }
-    }
+      }
 
     analizarError() {
         let inicio = this.posicion;

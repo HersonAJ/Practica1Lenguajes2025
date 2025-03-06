@@ -60,6 +60,44 @@ class AnalizadorLexico {
       
 
     analizarOperador(char) {
+        if (['+', '-', '*', '/', '^'].includes(char)) {
+            let inicio = this.posicion;
+            let longitudLexema = 0;
+    
+            // Contar secuencia de caracteres consecutivos
+            while (this.posicion < this.texto.length && this.texto[this.posicion] === char) {
+                this.posicion++;
+                longitudLexema++;
+            }
+    
+            // Si la longitud es mayor a 1, es un error
+            if (longitudLexema > 1) {
+                const valor = this.texto.substring(inicio, this.posicion);
+                this.errores.push(new ErrorLexico(valor, this.columna, this.fila));
+                this.columna += longitudLexema;
+            } else {
+                // Si es exactamente 1, es un operador válido
+                this.agregarToken("Operador Aritmetico", char, this.columna, this.fila);
+                this.columna++;
+            }
+        } else if (char === '=' || char === '&' || char === '|') {
+            // Manejo de operadores ya implementados
+            this.analizarOperadorCaracteresEspeciales(char);
+        } else if (['<', '>'].includes(char)) {
+            // Operadores relacionales
+            if (this.texto[this.posicion + 1] === '=') {
+                this.agregarToken("Operador Relacional", char + '=', this.columna, this.fila);
+                this.columna += 2;
+                this.posicion += 2;
+            } else {
+                this.agregarToken("Operador Relacional", char, this.columna, this.fila);
+                this.columna++;
+                this.posicion++;
+            }
+        }
+    }
+    
+    analizarOperadorCaracteresEspeciales(char) {
         if (char === '=') {
             let inicio = this.posicion;
             let longitudLexema = 0;
@@ -98,6 +136,7 @@ class AnalizadorLexico {
             }
         }
     }
+    
     
 
 

@@ -12,58 +12,95 @@ class AnalizadorLexico {
     analizar() {
         this.fila = 1;
         this.columna = 1;
+    
         while (this.posicion < this.texto.length) {
-          if (this.enError) {
-            this.analizarError();
-          } else {
             const char = this.texto[this.posicion];
-            if (Analizadores.esLetra(char)) {
-              if (this.texto.substring(this.posicion, this.posicion + 3) === 'AND') {
-                this.agregarToken("Operador Logico", 'AND', this.columna, this.fila);
-                this.posicion += 3;
-                this.columna += 3;
-              } else if (this.texto.substring(this.posicion, this.posicion + 2) === 'OR') {
-                this.agregarToken("Operador Logico", 'OR', this.columna, this.fila);
-                this.posicion += 2;
-                this.columna += 2;
-              } else {
-                this.analizarIdentificador();
-              }
-            } else if (Analizadores.esDigito(char)) {
-              this.analizarNumeroODecimal();
-            } else if (Analizadores.esOperador(char, this.texto, this.posicion)) {
-              if (char === '&' || char === '|') {
-                if (this.texto[this.posicion + 1] === char) {
-                  this.analizarOperador(char);
-                  this.posicion++; // avanzar la posición del análisis
+    
+            if (this.enError) {
+                this.analizarError();
+            } else if (Analizadores.esLetra(char)) {
+                if (this.texto.substring(this.posicion, this.posicion + 3) === 'AND') {
+                    this.agregarToken("Operador Logico", 'AND', this.columna, this.fila);
+                    this.posicion += 3;
+                    this.columna += 3;
+                } else if (this.texto.substring(this.posicion, this.posicion + 2) === 'OR') {
+                    this.agregarToken("Operador Logico", 'OR', this.columna, this.fila);
+                    this.posicion += 2;
+                    this.columna += 2;
                 } else {
-                  this.analizarError();
+                    this.analizarIdentificador();
                 }
-              } else {
+            } else if (Analizadores.esDigito(char)) {
+                this.analizarNumeroODecimal();
+            } else if (Analizadores.esOperador(char, this.texto, this.posicion)) {
                 this.analizarOperador(char);
-              }
             } else if (Analizadores.esPuntuacion(char)) {
-              this.agregarToken("Puntuacion", char, this.columna, this.fila);
-              this.columna++;
-              this.posicion++;
+                this.agregarToken("Puntuacion", char, this.columna, this.fila);
+                this.columna++;
+                this.posicion++;
             } else if (Analizadores.esAgrupacion(char)) {
-              this.agregarToken("Agrupacion", char, this.columna, this.fila);
-              this.columna++;
-              this.posicion++;
+                this.agregarToken("Agrupacion", char, this.columna, this.fila);
+                this.columna++;
+                this.posicion++;
             } else if (Analizadores.esEspacio(char)) {
-              this.columna++;
-              this.posicion++;
+                this.columna++;
+                this.posicion++;
             } else if (Analizadores.esSaltoDeLinea(char)) {
-              this.fila++;
-              this.columna = 1;
-              this.posicion++;
+                // Saltos de línea manejados correctamente
+                this.fila++;
+                this.columna = 1; // Reiniciar la columna
+                this.posicion++;
             } else {
-              this.enError = true;
-              this.analizarError();
+                this.enError = true;
+                this.analizarError();
             }
-          }
         }
-      }
+    }
+    
+      
+
+    analizarOperador(char) {
+        if (char === '=') {
+            let inicio = this.posicion;
+            let longitudLexema = 0;
+    
+            // Contar secuencia de '='
+            while (this.posicion < this.texto.length && this.texto[this.posicion] === '=') {
+                this.posicion++;
+                longitudLexema++;
+            }
+    
+            if (longitudLexema > 1) {
+                const valor = this.texto.substring(inicio, this.posicion);
+                this.errores.push(new ErrorLexico(valor, this.columna, this.fila));
+                this.columna += longitudLexema;
+            } else {
+                this.agregarToken("Operador de Asignacion", char, this.columna, this.fila);
+                this.columna++;
+            }
+        } else if (char === '&' || char === '|') {
+            let inicio = this.posicion;
+            let longitudLexema = 0;
+    
+            // Contar secuencia de '&' o '|'
+            while (this.posicion < this.texto.length && this.texto[this.posicion] === char) {
+                this.posicion++;
+                longitudLexema++;
+            }
+    
+            if (longitudLexema === 2) {
+                this.agregarToken("Operador Logico", char + char, this.columna, this.fila);
+                this.columna += 2;
+            } else {
+                const valor = this.texto.substring(inicio, this.posicion);
+                this.errores.push(new ErrorLexico(valor, this.columna, this.fila));
+                this.columna += longitudLexema;
+            }
+        }
+    }
+    
+
+
     analizarIdentificador() {
         let inicio = this.posicion;
         let longitudLexema = 0;
@@ -112,35 +149,7 @@ class AnalizadorLexico {
         this.columna += longitudLexema;
     }
 
-    analizarOperador(char) {
-        if (char === '&' && this.texto[this.posicion + 1] === '&') {
-          this.agregarToken("Operador Logico", '&&', this.columna, this.fila);
-          this.columna += 2;
-          this.posicion += 2;
-          return;
-        } else if (char === '|' && this.texto[this.posicion + 1] === '|') {
-          this.agregarToken("Operador Logico", '||', this.columna, this.fila);
-          this.columna += 2;
-          this.posicion += 2;
-          return;
-        } else if (['<', '>', '='].includes(char) && this.texto[this.posicion + 1] === '=') {
-          this.agregarToken("Operador Relacional", char + '=', this.columna, this.fila);
-          this.columna += 2;
-          this.posicion += 2;
-        } else if (['+', '-', '*', '/', '^'].includes(char)) {
-          this.agregarToken("Operador Aritmetico", char, this.columna, this.fila);
-          this.columna++;
-          this.posicion++;
-        } else if (['<', '>'].includes(char)) {
-          this.agregarToken("Operador Relacional", char, this.columna, this.fila);
-          this.columna++;
-          this.posicion++;
-        } else if (char === '=') {
-          this.agregarToken("Operador de Asignacion", char, this.columna, this.fila);
-          this.columna++;
-          this.posicion++;
-        }
-      }
+    
 
     analizarError() {
         let inicio = this.posicion;

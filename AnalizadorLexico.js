@@ -81,7 +81,7 @@ class AnalizadorLexico {
                 this.columna++;
             }
         } else if (char === '=' || char === '&' || char === '|') {
-            // Manejo de operadores ya implementados
+            // Manejo de operadores
             this.analizarOperadorCaracteresEspeciales(char);
         } else if (['<', '>'].includes(char)) {
             // Operadores relacionales
